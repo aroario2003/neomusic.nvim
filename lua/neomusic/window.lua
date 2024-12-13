@@ -35,16 +35,17 @@ end
 function M.notification(message, ...)
     local nm = require("neomusic")
 
+    local active_notifs = {}
+
     message = string.format(message, ...)
     local width = 80
     local required_height = 0
     required_height = required_height + math.ceil(message:len() / width)
 
-
     local notif_win_settings = {
         relative='editor',
         style='minimal',
-        border='single',
+        border='rounded',
         row=0,
         col=(vim.o.columns-width),
         width=width,
@@ -54,19 +55,29 @@ function M.notification(message, ...)
         focusable=false
     }
 
-    M.notif_win_data.bufnr = vim.api.nvim_create_buf(false, true)
-    vim.bo[M.notif_win_data.bufnr].filetype = "notification"
-    vim.api.nvim_set_option_value("wrap", true, {win = M.notif_win_data.win})
-    M.notif_win_data.win = vim.api.nvim_open_win(M.notif_win_data.bufnr, false, notif_win_settings)
-    vim.api.nvim_buf_set_lines(M.notif_win_data.bufnr, 0, 1, false, {message})
+    local bufnr = vim.api.nvim_create_buf(false, true)
+    vim.bo[bufnr].filetype = "notification"
+    local win = vim.api.nvim_open_win(bufnr, false, notif_win_settings)
+    vim.api.nvim_buf_set_lines(bufnr, 0, 1, false, {message})
+    vim.api.nvim_set_option_value("wrap", true, {win = win})
+    table.insert(active_notifs, {bufnr = M.notif_win_data.bufnr, win = M.notif_win_data.win})
 
     local timer = vim.uv.new_timer()
     timer:start(nm.config.notif_timeout * 1000, 0, vim.schedule_wrap(function()
-        if M.notif_win_data.win and vim.api.nvim_win_is_valid(M.notif_win_data.win) then
-            vim.api.nvim_win_close(M.notif_win_data.win, true)
+        if vim.api.nvim_win_is_valid(win) then
+            pcall(vim.api.nvim_win_close, win, true)
         end
-        M.notif_win_data.bufnr = nil
-        M.notif_win_data.win = nil
+
+        for i, notif in ipairs(active_notifs) do
+            if notif.win == win then
+                table.remove(active_notifs, i)
+            end
+        end
+
+        if vim.api.nvim_buf_is_valid(bufnr) then
+            vim.api.nvim_buf_delete(bufnr, {force = true})
+        end
+        timer:close()
     end))
 end
 

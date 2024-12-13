@@ -7,10 +7,8 @@ function M._write(message)
     local command = string.format("echo '%s' | socat - %s", message, M.sock_path)
     local pfile = io.popen(command)
     if pfile == nil then
-        nm_win.notification("Error writting to mpv socket at: %s", M.sock_path)
-        return
+        nm_win.notification("Something went wrong writing to the mpv socket")
     end
-    local _ = pfile:lines()
 end
 
 return M

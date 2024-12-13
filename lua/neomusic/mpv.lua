@@ -3,11 +3,15 @@ local M = {}
 function M._internal_play_song(song_path)
     local nm_sock = require("neomusic.socket")
     local nm_win = require("neomusic.window")
-    local pfile = io.popen('mpv --no-video --input-ipc-server=' .. nm_sock.sock_path .. ' ' .. song_path)
-    if pfile == nil then
-        nm_win.notification("Error: Could not execute mpv command to play music")
-        return
-    end
+    vim.fn.jobstart('mpv --no-video --input-ipc-server=' .. nm_sock.sock_path .. ' ' .. song_path, {
+        on_exit = function(_, exit_code, _)
+            if exit_code ~= 0 then
+                nm_win.notification("Something when wrong exiting mpv")
+            else
+                nm_win.notification("Song finished")
+            end
+        end,
+    })
 end
 
 function M._internal_pause_song()
@@ -21,3 +25,4 @@ function M._internal_unpause_song()
 end
 
 return M
+
