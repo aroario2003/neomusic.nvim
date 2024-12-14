@@ -9,7 +9,7 @@ function M.create_window(name, width, height)
     local win_settings = {
         relative='editor',
         style='minimal',
-        border='single',
+        border='rounded',
         row=(vim.o.lines-height)/2,
         col=(vim.o.columns-width)/2,
         width=width,

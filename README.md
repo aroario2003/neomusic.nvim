@@ -13,7 +13,7 @@ Some people like to listen to music while they code, however, in order to do so 
 - `socat`
 - `mpv`
 
-## Setup
+## Install
 
 With `lazy.nvim`
 
@@ -28,7 +28,7 @@ require("lazy").setup({
 })
 ```
 
-Plugin configuration:
+## Setup
 
 ```lua
 local nm = require("neomusic")
@@ -47,6 +47,8 @@ nm.setup({
             {'n', '<leader>nt', ':lua require("neomusic").toggle_playlist_menu()<CR>'},
             {'n', '<leader>ps', ':lua require("neomusic.state").unpause_song()<CR>'},
             {'n', '<leader>Ps', ':lua require("neomusic.state").pause_song()<CR>'}
+            {'n', '<leader>nns', ':lua require("neomusic.state").next_song()<CR>'},
+            {'n', '<leader>nps', ':lua require("neomusic.state").prev_song()<CR>'},
         }
     }
 })
