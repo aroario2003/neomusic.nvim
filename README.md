@@ -32,7 +32,6 @@ Plugin configuration:
 
 ```lua
 local nm = require("neomusic")
-local nm_keys = require("neomusic.keymaps")
 nm.setup({
     --The directory that you have your playlists are in
     playlist_dir=os.getenv("HOME") .. "/Music",
