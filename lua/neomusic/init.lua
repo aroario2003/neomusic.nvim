@@ -85,11 +85,9 @@ function M.toggle_playlist_menu()
 end
 
 function M.setup(conf)
-    if not conf then
-        return
-    end
-
-    M.config = conf
+    M.config = conf or M.config
+    local nm_keys = require("neomusic.keymaps")
+    nm_keys.load_global_keymaps()
 end
 
 return M
