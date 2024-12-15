@@ -4,34 +4,34 @@ local vim = vim
 local M = {}
 
 function M.load_keymaps()
-   local state = require("neomusic.state")
-   local window = require("neomusic.window")
+   local nm_state = require("neomusic.state")
+   local nm_win = require("neomusic.window")
 
    vim.keymap.set('n', '<Enter>', function()
         return nm.enter_selection()
-    end, {buffer = window.bufnr, silent = true})
+    end, {buffer = nm_win.bufnr, silent = true})
 
     vim.keymap.set('n', 'j', function()
-        local cur_pos = vim.api.nvim_win_get_cursor(window.win)
+        local cur_pos = vim.api.nvim_win_get_cursor(nm_win.win)
         cur_pos[1] = cur_pos[1] + 1
-        if cur_pos[1] > vim.api.nvim_buf_line_count(window.bufnr) then
+        if cur_pos[1] > vim.api.nvim_buf_line_count(nm_win.bufnr) then
             return
         else
-            vim.api.nvim_win_set_cursor(window.win, cur_pos)
+            vim.api.nvim_win_set_cursor(nm_win.win, cur_pos)
         end
-        return state.update_hover()
-    end, { buffer = window.bufnr, silent = true })
+        return nm_state.update_hover()
+    end, { buffer = nm_win.bufnr, silent = true })
 
     vim.keymap.set('n', 'k', function()
-        local cur_pos = vim.api.nvim_win_get_cursor(window.win)
+        local cur_pos = vim.api.nvim_win_get_cursor(nm_win.win)
         cur_pos[1] = cur_pos[1] - 1
         if cur_pos[1] < 1 then
             return
         else
-            vim.api.nvim_win_set_cursor(window.win, cur_pos)
+            vim.api.nvim_win_set_cursor(nm_win.win, cur_pos)
         end
-        return state.update_hover()
-    end, { buffer = window.bufnr, silent = true })
+        return nm_state.update_hover()
+    end, { buffer = nm_win.bufnr, silent = true })
 end
 
 function M.load_global_keymaps()
