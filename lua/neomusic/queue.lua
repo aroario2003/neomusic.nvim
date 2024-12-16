@@ -32,6 +32,9 @@ end
 ---Pop an element from the queue
 ---@return any
 function Queue:pop()
+    if self:is_empty() then
+        return nil
+    end
     local item = table.remove(self.items, 0)
     return item
 end

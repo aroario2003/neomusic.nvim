@@ -99,6 +99,11 @@ function M.pause_song()
     local nm_win = require("neomusic.window")
     local nm_mpv = require("neomusic.mpv")
 
+    if M.cur_song == nil or M.cur_song == "No song playing" then
+        nm_win.notification("No song is currently playing")
+        return
+    end
+
     nm_mpv._internal_pause_song()
     nm_win.notification("Paused song: %s", M.cur_song)
     M.is_paused = true
@@ -109,6 +114,11 @@ end
 function M.unpause_song()
     local nm_win = require("neomusic.window")
     local nm_mpv = require("neomusic.mpv")
+
+    if M.cur_song == nil or M.cur_song =="No song playing" then
+        nm_win.notification("No song is currently playing")
+        return
+    end
 
     nm_mpv._internal_unpause_song()
     nm_win.notification("Resuming song: %s", M.cur_song)

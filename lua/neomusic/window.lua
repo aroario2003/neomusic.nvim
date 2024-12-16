@@ -23,6 +23,7 @@ function M.create_window(name, width, height)
     M.win = vim.api.nvim_open_win(M.bufnr, true, win_settings)
 end
 
+---Close a window
 function M.close_window()
     vim.api.nvim_win_close(M.win, true)
     M.win = nil
