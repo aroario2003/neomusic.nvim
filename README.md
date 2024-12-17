@@ -12,6 +12,9 @@ Some people like to listen to music while they code, however, in order to do so 
 - `nvim 0.8.0+`
 - `socat`
 - `mpv`
+- `telescope.nvim` (neovim plugin)
+
+The `telescope.nvim` dependency should be handled by `lazy.nvim`
 
 ## Install
 
@@ -21,7 +24,8 @@ With `lazy.nvim`
 require("lazy").setup({
     spec = {
         {
-            "aroario2003/neomusic.nvim"
+            "aroario2003/neomusic.nvim",
+            dependencies = { "nvim-telescope/telescope.nvim" }
         },
         -- ...other plugins,
     }
@@ -44,11 +48,11 @@ nm.setup({
     --make sure these dont conflict with existing keybinds
     global_keymaps = {
         keybinds = {
-            {'n', '<leader>nt', ':lua require("neomusic").toggle_playlist_menu()<CR>'},
-            {'n', '<leader>ps', ':lua require("neomusic.state").unpause_song()<CR>'},
-            {'n', '<leader>Ps', ':lua require("neomusic.state").pause_song()<CR>'}
-            {'n', '<leader>nns', ':lua require("neomusic.state").next_song()<CR>'},
-            {'n', '<leader>nps', ':lua require("neomusic.state").prev_song()<CR>'},
+            {'n', '<leader>nt', ':Neomusic toggle_playlist_menu<CR>'},
+            {'n', '<leader>ps', ':Neomusic unpause_song<CR>'},
+            {'n', '<leader>Ps', ':Neomusic pause_song<CR>'},
+            {'n', '<leader>nns', ':Neomusic next_song<CR>'},
+            {'n', '<leader>nps', ':Neomusic prev_song<CR>'},
         }
     }
 })
@@ -59,4 +63,3 @@ The default configuration is above, if you are ok with that configuration then y
 ```lua
 require("neomusic").setup()
 ```
-
