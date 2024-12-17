@@ -20,7 +20,9 @@ function M.command_completion(arg_lead, cmd_line, cursor_pos)
         "next_song",
         "prev_song",
         "toggle_controls",
-        "play_song"
+        "play_song",
+        "pause_song",
+        "unpause_song",
     }
     local results = {}
 
@@ -46,6 +48,10 @@ function M.parse_args(data)
             nm_state.next_song()
         elseif data.fargs[1] == "prev_song" then
             nm_state.prev_song()
+        elseif data.fargs[1] == "pause_song" then
+            nm_state.pause_song()
+        elseif data.fargs[1] == "unpause_song" then
+            nm_state.unpause_song()
         elseif data.fargs[1] == "toggle_controls" then
             nm_controls.toggle_controls_window()
         end

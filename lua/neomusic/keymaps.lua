@@ -32,6 +32,10 @@ function M.load_keymaps()
         end
         return nm_state.update_hover()
     end, { buffer = nm_win.bufnr, silent = true })
+
+    vim.keymap.set('n', '<LeftMouse>', function()
+        return nm_state.handle_mouse_click()
+    end, {buffer = nm_win.bufnr, silent = true})
 end
 
 function M.load_global_keymaps()
