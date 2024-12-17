@@ -6,7 +6,9 @@ local M = {
     cur_song = nil,
     next_song_name = nil,
     prev_song_name = nil,
-    song_queue = nil
+    song_queue = nil,
+    mouse_clicked = 0,
+    prev_mouse_row = nil
 }
 
 ---Reset state of plugin (this happens when neovim is quit too)
@@ -49,7 +51,36 @@ function M.update_hover()
     local cur_pos = vim.api.nvim_win_get_cursor(nm_win.win)
     local row = cur_pos[1]-1
     vim.api.nvim_buf_del_extmark(nm_win.bufnr, nm_win.ns, nm_win.extm_id)
-    nm_win.extm_id = vim.api.nvim_buf_set_extmark(nm_win.bufnr, nm_win.ns, row, 0, {end_line=row+1, hl_eol=true, hl_group="visual"})
+    nm_win.extm_id = vim.api.nvim_buf_set_extmark(nm_win.bufnr, nm_win.ns, row, 0, {end_row=row+1, hl_eol=true, hl_group="visual"})
+end
+
+function M.handle_mouse_click()
+    local nm_win = require("neomusic.window")
+
+    local mouse_pos = vim.fn.getmousepos()
+    local mouse_row = mouse_pos.line
+    local lines = vim.api.nvim_buf_get_lines(nm_win.bufnr, 0, -1, false)
+
+    if mouse_row > #lines then
+        return
+    end
+
+    mouse_row = mouse_row - 1
+
+    if M.prev_mouse_row then
+        if mouse_row+1 == M.prev_mouse_row then
+            M.mouse_clicked = 0
+            M.prev_mouse_row = nil
+            require("neomusic").enter_selection()
+            return
+        end
+    end
+
+    vim.api.nvim_buf_del_extmark(nm_win.bufnr, nm_win.ns, nm_win.extm_id)
+    nm_win.extm_id = vim.api.nvim_buf_set_extmark(nm_win.bufnr, nm_win.ns, mouse_row, 0, {end_row=mouse_row+1, hl_eol=true, hl_group="visual"})
+    vim.api.nvim_win_set_cursor(nm_win.win, {mouse_row+1, 0})
+    M.mouse_clicked = M.mouse_clicked + 1
+    M.prev_mouse_row = mouse_row+1
 end
 
 ---Get the previous and next song
@@ -102,6 +133,9 @@ function M.pause_song()
     if M.cur_song == nil or M.cur_song == "No song playing" then
         nm_win.notification("No song is currently playing")
         return
+    elseif M.is_paused then
+        nm_win.notification("The song is already paused")
+        return
     end
 
     nm_mpv._internal_pause_song()
@@ -117,6 +151,9 @@ function M.unpause_song()
 
     if M.cur_song == nil or M.cur_song =="No song playing" then
         nm_win.notification("No song is currently playing")
+        return
+    elseif M.is_playing then
+        nm_win.notification("The song is already playing")
         return
     end
 
