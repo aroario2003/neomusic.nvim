@@ -9,6 +9,14 @@ function M._write(message)
     if pfile == nil then
         nm_win.notification("Something went wrong writing to the mpv socket")
     end
+
+    local output = {}
+
+    for str in pfile:lines() do
+       table.insert(output, str)
+    end
+
+    return output
 end
 
 return M
