@@ -90,7 +90,9 @@ end
 function M.setup(conf)
     M.config = conf or M.config
     local nm_keys = require("neomusic.keymaps")
+    local nm_command = require("neomusic.command")
     nm_keys.load_global_keymaps()
+    nm_command.init_command()
 end
 
 return M
