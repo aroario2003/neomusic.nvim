@@ -1,4 +1,4 @@
-local M = {mpv_pid = nil}
+local M = { mpv_pid = nil }
 
 ---Internal function to play a song with mpv
 function M._internal_play_song(song_path)
@@ -24,7 +24,7 @@ function M._internal_pause_song()
     nm_sock._write('{ \"command\": [\"set_property\", \"pause\", true] }')
 end
 
----Internal function to unpause a song 
+---Internal function to unpause a song
 function M._internal_unpause_song()
     local nm_sock = require("neomusic.socket")
     nm_sock._write('{ \"command\": [\"set_property\", \"pause\", false] }')
@@ -80,13 +80,13 @@ end
 ---Internal function to kill the mpv process if it is still running
 function M._kill_mpv()
     local nm_win = require("neomusic.window")
-   if not M.mpv_pid then
+    if not M.mpv_pid then
         return
     end
 
     local success = os.execute("kill -9 " .. M.mpv_pid)
     if not success then
-       nm_win.notification("Something went wrong trying to kill mpv process with pid: %d", M.mpv_pid)
+        nm_win.notification("Something went wrong trying to kill mpv process with pid: %d", M.mpv_pid)
     end
 end
 
@@ -96,14 +96,14 @@ function M._get_song_duration()
     local nm_sock = require("neomusic.socket")
 
     local ret = nm_sock._write('{\"command\": [\"get_property\", \"duration\"]}')
-    local split = string.gmatch(ret[1], "([^"..",".."]+)")
+    local split = string.gmatch(ret[1], "([^" .. "," .. "]+)")
     local data_parts = {}
 
     for item in split do
         if string.find(item, "data") then
-            local data = string.gmatch(item, "([^"..":".."]+)")
+            local data = string.gmatch(item, "([^" .. ":" .. "]+)")
             for section in data do
-               table.insert(data_parts, section)
+                table.insert(data_parts, section)
             end
             break
         end
@@ -117,12 +117,12 @@ function M._get_current_volume()
     local nm_sock = require("neomusic.socket")
 
     local ret = nm_sock._write('{\"command\": [\"get_property\", \"volume\"] }')
-    local split = string.gmatch(ret[1], "([^"..",".."]+)")
+    local split = string.gmatch(ret[1], "([^" .. "," .. "]+)")
     local data_parts = {}
 
     for item in split do
         if string.find(item, "data") then
-            local data = string.gmatch(item, "([^"..":".."]+)")
+            local data = string.gmatch(item, "([^" .. ":" .. "]+)")
             for section in data do
                 table.insert(data_parts, section)
             end
@@ -133,4 +133,3 @@ function M._get_current_volume()
 end
 
 return M
-

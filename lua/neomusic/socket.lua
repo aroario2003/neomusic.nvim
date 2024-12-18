@@ -1,4 +1,4 @@
-local M = {sock_path = "/tmp/mpvsocket"}
+local M = { sock_path = "/tmp/mpvsocket" }
 
 ---Write to a socket, in this case the mpv socket for ipc
 ---@param message string
@@ -13,7 +13,7 @@ function M._write(message)
     local output = {}
 
     for str in pfile:lines() do
-       table.insert(output, str)
+        table.insert(output, str)
     end
 
     return output

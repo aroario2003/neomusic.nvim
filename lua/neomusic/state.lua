@@ -4,6 +4,7 @@ local M = {
     is_playing = nil,
     is_paused = nil,
     cur_song = nil,
+    song_name = nil,
     next_song_name = nil,
     prev_song_name = nil,
     song_queue = nil,
@@ -39,7 +40,7 @@ function M.populate_songs(playlist_dir)
 
     local songs = nm._get_dir_listing(playlist_dir)
     M.cur_dir = playlist_dir
-    vim.api.nvim_buf_set_lines(nm_win.bufnr, 0, 1, false, {".."})
+    vim.api.nvim_buf_set_lines(nm_win.bufnr, 0, 1, false, { ".." })
     vim.api.nvim_buf_set_lines(nm_win.bufnr, 1, -1, false, songs)
     M.songs_populated = true
 end
@@ -49,9 +50,10 @@ function M.update_hover()
     local nm_win = require("neomusic.window")
 
     local cur_pos = vim.api.nvim_win_get_cursor(nm_win.win)
-    local row = cur_pos[1]-1
+    local row = cur_pos[1] - 1
     vim.api.nvim_buf_del_extmark(nm_win.bufnr, nm_win.ns, nm_win.extm_id)
-    nm_win.extm_id = vim.api.nvim_buf_set_extmark(nm_win.bufnr, nm_win.ns, row, 0, {end_row=row+1, hl_eol=true, hl_group="visual"})
+    nm_win.extm_id = vim.api.nvim_buf_set_extmark(nm_win.bufnr, nm_win.ns, row, 0,
+        { end_row = row + 1, hl_eol = true, hl_group = "visual" })
 end
 
 function M.handle_mouse_click()
@@ -68,7 +70,7 @@ function M.handle_mouse_click()
     mouse_row = mouse_row - 1
 
     if M.prev_mouse_row then
-        if mouse_row+1 == M.prev_mouse_row then
+        if mouse_row + 1 == M.prev_mouse_row then
             M.mouse_clicked = 0
             M.prev_mouse_row = nil
             require("neomusic").enter_selection()
@@ -77,10 +79,11 @@ function M.handle_mouse_click()
     end
 
     vim.api.nvim_buf_del_extmark(nm_win.bufnr, nm_win.ns, nm_win.extm_id)
-    nm_win.extm_id = vim.api.nvim_buf_set_extmark(nm_win.bufnr, nm_win.ns, mouse_row, 0, {end_row=mouse_row+1, hl_eol=true, hl_group="visual"})
-    vim.api.nvim_win_set_cursor(nm_win.win, {mouse_row+1, 0})
+    nm_win.extm_id = vim.api.nvim_buf_set_extmark(nm_win.bufnr, nm_win.ns, mouse_row, 0,
+        { end_row = mouse_row + 1, hl_eol = true, hl_group = "visual" })
+    vim.api.nvim_win_set_cursor(nm_win.win, { mouse_row + 1, 0 })
     M.mouse_clicked = M.mouse_clicked + 1
-    M.prev_mouse_row = mouse_row+1
+    M.prev_mouse_row = mouse_row + 1
 end
 
 ---Get the previous and next song
@@ -93,21 +96,30 @@ local function get_prev_next_songs()
             local full_song_path = M.cur_dir .. song
             if M.cur_song == full_song_path then
                 if i == 1 then
-                    M.next_song_name = songs[i+1]
+                    M.next_song_name = songs[i + 1]
                     M.prev_song_name = nil
                 elseif i == 2 and #songs == 2 then
-                    M.prev_song_name = songs[i-1]
+                    M.prev_song_name = songs[i - 1]
                     M.next_song_name = nil
                 elseif i == #songs then
-                    M.prev_song_name = songs[i-1]
+                    M.prev_song_name = songs[i - 1]
                     M.next_song_name = nil
                 else
-                    M.prev_song_name = songs[i-1]
-                    M.next_song_name = songs[i+1]
+                    M.prev_song_name = songs[i - 1]
+                    M.next_song_name = songs[i + 1]
                 end
             end
         end
     end
+end
+
+local function get_song_name(song_path)
+    local split = string.gmatch(song_path, "([^" .. "/" .. "]+)")
+    local song_path_parts = {}
+    for item in split do
+        table.insert(song_path_parts, item)
+    end
+    return song_path_parts[#song_path_parts]
 end
 
 ---Play the song with mpv
@@ -119,6 +131,8 @@ function M.play_song(song_path)
     nm_mpv._kill_mpv()
     nm_mpv._internal_play_song(song_path)
     nm_win.notification("Now Playing: %s", song_path)
+
+    M.song_name = get_song_name(song_path)
     M.cur_song = song_path
     M.is_playing = true
     M.is_paused = false
@@ -149,7 +163,7 @@ function M.unpause_song()
     local nm_win = require("neomusic.window")
     local nm_mpv = require("neomusic.mpv")
 
-    if M.cur_song == nil or M.cur_song =="No song playing" then
+    if M.cur_song == nil or M.cur_song == "No song playing" then
         nm_win.notification("No song is currently playing")
         return
     elseif M.is_playing then
@@ -172,6 +186,7 @@ function M.next_song()
         nm_mpv._kill_mpv()
         nm_mpv._internal_play_song(M.next_song_name)
         M.cur_song = M.next_song_name
+        M.song_name = get_song_name(M.cur_song)
         nm_win.notification("Playing next song: %s", M.cur_song)
         get_prev_next_songs()
     else
@@ -188,6 +203,7 @@ function M.prev_song()
         nm_mpv._kill_mpv()
         nm_mpv._internal_play_song(M.prev_song_name)
         M.cur_song = M.prev_song_name
+        M.song_name = get_song_name(M.cur_song)
         nm_win.notification("Playing prev song: %s", M.cur_song)
         get_prev_next_songs()
     else

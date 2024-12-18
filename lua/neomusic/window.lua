@@ -17,15 +17,15 @@ M.notif_win_data = {
 ---@param height integer
 function M.create_window(name, width, height)
     local win_settings = {
-        relative='editor',
-        style='minimal',
-        border='rounded',
-        row=(vim.o.lines-height)/2,
-        col=(vim.o.columns-width)/2,
-        width=width,
-        height=height,
-        title=name,
-        title_pos='center'
+        relative = 'editor',
+        style = 'minimal',
+        border = 'rounded',
+        row = (vim.o.lines - height) / 2,
+        col = (vim.o.columns - width) / 2,
+        width = width,
+        height = height,
+        title = name,
+        title_pos = 'center'
     }
 
     M.bufnr = vim.api.nvim_create_buf(false, true)
@@ -54,24 +54,24 @@ function M.notification(message, ...)
     required_height = required_height + math.ceil(message:len() / width)
 
     local notif_win_settings = {
-        relative='editor',
-        style='minimal',
-        border='rounded',
-        row=0,
-        col=(vim.o.columns-width),
-        width=width,
-        height=required_height,
-        title="Neomusic Notification",
-        title_pos='center',
-        focusable=false
+        relative = 'editor',
+        style = 'minimal',
+        border = 'rounded',
+        row = 0,
+        col = (vim.o.columns - width),
+        width = width,
+        height = required_height,
+        title = "Neomusic Notification",
+        title_pos = 'center',
+        focusable = false
     }
 
     local bufnr = vim.api.nvim_create_buf(false, true)
     vim.bo[bufnr].filetype = "notification"
     local win = vim.api.nvim_open_win(bufnr, false, notif_win_settings)
-    vim.api.nvim_buf_set_lines(bufnr, 0, 1, false, {message})
-    vim.api.nvim_set_option_value("wrap", true, {win = win})
-    table.insert(active_notifs, {bufnr = M.notif_win_data.bufnr, win = M.notif_win_data.win})
+    vim.api.nvim_buf_set_lines(bufnr, 0, 1, false, { message })
+    vim.api.nvim_set_option_value("wrap", true, { win = win })
+    table.insert(active_notifs, { bufnr = M.notif_win_data.bufnr, win = M.notif_win_data.win })
 
     ---@diagnostic disable-next-line:undefined-field
     local timer = vim.uv.new_timer()
@@ -87,7 +87,7 @@ function M.notification(message, ...)
         end
 
         if vim.api.nvim_buf_is_valid(bufnr) then
-            vim.api.nvim_buf_delete(bufnr, {force = true})
+            vim.api.nvim_buf_delete(bufnr, { force = true })
         end
         timer:close()
     end))

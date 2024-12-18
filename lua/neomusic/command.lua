@@ -3,7 +3,7 @@ local M = {}
 ---Initialize the Neomusic user command
 function M.init_command()
     vim.api.nvim_create_user_command("Neomusic", M.parse_args, {
-        nargs='+',
+        nargs = '+',
         complete = M.command_completion,
     })
 end
