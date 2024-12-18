@@ -1,5 +1,15 @@
-local M = {bufnr = nil, win = nil, ns = vim.api.nvim_create_namespace("neomusic"), extm_id = nil}
-M.notif_win_data = {bufnr = nil, win = nil, ns = vim.api.nvim_create_namespace("neomusic notification")}
+local M = {
+    bufnr = nil,
+    win = nil,
+    ns = vim.api.nvim_create_namespace("neomusic"),
+    extm_id = nil
+}
+
+M.notif_win_data = {
+    bufnr = nil,
+    win = nil,
+    ns = vim.api.nvim_create_namespace("neomusic notification")
+}
 
 ---Creates a window
 ---@param name string
@@ -63,6 +73,7 @@ function M.notification(message, ...)
     vim.api.nvim_set_option_value("wrap", true, {win = win})
     table.insert(active_notifs, {bufnr = M.notif_win_data.bufnr, win = M.notif_win_data.win})
 
+    ---@diagnostic disable-next-line:undefined-field
     local timer = vim.uv.new_timer()
     timer:start(nm.config.notif_timeout * 1000, 0, vim.schedule_wrap(function()
         if vim.api.nvim_win_is_valid(win) then

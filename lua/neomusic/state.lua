@@ -195,4 +195,34 @@ function M.prev_song()
     end
 end
 
+--- Set the volume of mpv
+--- @param vol number
+function M.set_volume(vol)
+    local nm_mpv = require("neomusic.mpv")
+    local nm_win = require("neomusic.window")
+
+    nm_mpv._internal_set_volume(vol)
+    nm_win.notification("Volume set to %d%%", vol)
+end
+
+---Increase the volume of mpv
+---@param inc number
+function M.increase_volume(inc)
+    local nm_mpv = require("neomusic.mpv")
+    local nm_win = require("neomusic.window")
+
+    nm_mpv._internal_increase_volume(inc)
+    nm_win.notification("Volume increased to %d%%", nm_mpv._get_current_volume())
+end
+
+---Decrease the volume of mpv
+---@param dec number
+function M.decrease_volume(dec)
+    local nm_mpv = require("neomusic.mpv")
+    local nm_win = require("neomusic.window")
+
+    nm_mpv._internal_decrease_volume(dec)
+    nm_win.notification("Volume decreased to %d%%", nm_mpv._get_current_volume())
+end
+
 return M

@@ -41,6 +41,7 @@ function M.parse_args(data)
     local nm = require("neomusic")
     local nm_state = require("neomusic.state")
     local nm_controls = require("neomusic.controls")
+
     if #data.fargs == 1 then
         if data.fargs[1] == "toggle_playlist_menu" then
             nm.toggle_playlist_menu()
@@ -58,6 +59,15 @@ function M.parse_args(data)
     elseif #data.fargs == 2 then
         if data.fargs[1] == "play_song" then
             nm_state.play_song(data.fargs[2])
+        elseif data.fargs[1] == "set_volume" then
+            local vol = tonumber(data.fargs[2], 10)
+            nm_state.set_volume(vol)
+        elseif data.fargs[1] == "increase_volume" then
+            local inc = tonumber(data.fargs[2], 10)
+            nm_state.increase_volume(inc)
+        elseif data.fargs[1] == "decrease_volume" then
+            local dec = tonumber(data.fargs[2], 10)
+            nm_state.decrease_volume(dec)
         end
     end
 end

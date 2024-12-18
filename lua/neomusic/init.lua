@@ -1,4 +1,5 @@
 local M = {}
+
 M.config = {
     playlist_dir=os.getenv("HOME") .. "/Music",
     notif_timeout = 5,
@@ -9,6 +10,8 @@ M.config = {
             {'n', '<leader>Ps', ':Neomusic pause_song<CR>'},
             {'n', '<leader>nns', ':Neomusic next_song<CR>'},
             {'n', '<leader>nps', ':Neomusic prev_song<CR>'},
+            {'n', '<leader>nis', ':Neomusic increase_volume 5<CR>'},
+            {'n', '<leader>nds', ':Neomusic decrease_volume 5<CR>'},
         }
     }
 }
@@ -20,10 +23,12 @@ function M._get_dir_listing(dir)
     if pfile == nil then
         nm_win.notification("Could not get directory listing for %s", dir)
     end
+    ---@diagnostic disable-next-line:need-check-nil
     for filename in pfile:lines() do
         i = i+1
         table.insert(listing, filename)
     end
+    ---@diagnostic disable-next-line:need-check-nil
     pfile:close()
     return listing
 end
