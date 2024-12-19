@@ -8,33 +8,10 @@ local M = {
     symbol_row = 3,
 }
 
-
----Toggle the window for the controls
-function M.toggle_controls_window()
-    local nm_controls_win = require("neomusic.controls.window")
-    local nm_controls_keys = require("neomusic.controls.keymaps")
+---Function to draw the song title on the controls window
+local function draw_song_title()
     local nm_state = require("neomusic.state")
-
-    if nm_controls_win.win ~= nil and vim.api.nvim_win_is_valid(nm_controls_win.win) then
-        nm_controls_win.close_window()
-        return
-    end
-
-    nm_controls_win.create_window("Neomsic Controls", M.window_width, M.window_height)
-    if nm_state.cur_song == nil then
-        nm_state.cur_song = "No song playing"
-        nm_state.song_name = "No song playing"
-    end
-
-    vim.api.nvim_buf_set_lines(nm_controls_win.bufnr, 0, -1, false, {
-        string.rep(" ", M.window_width),
-        string.rep(" ", M.window_width),
-        string.rep(" ", M.window_width),
-        string.rep(" ", M.window_width),
-        string.rep(" ", M.window_width),
-        string.rep(" ", M.window_width),
-        string.rep(" ", M.window_width)
-    })
+    local nm_controls_win = require("neomusic.controls.window")
 
     local start_col = math.floor((M.window_width - nm_state.song_name:len()) / 2)
     local end_col = start_col + nm_state.song_name:len()
@@ -44,10 +21,15 @@ function M.toggle_controls_window()
         nm_state.song_name = nm_state.song_name .. "..."
         start_col = math.floor((M.window_width - nm_state.song_name:len()) / 2)
         end_col = start_col + nm_state.song_name:len()
-        print(end_col)
     end
     vim.api.nvim_buf_set_text(nm_controls_win.bufnr, 0, start_col, 1, end_col,
         { nm_state.song_name })
+end
+
+---Function to draw the control symbols on the controls window
+local function draw_control_symbols()
+    local nm_state = require("neomusic.state")
+    local nm_controls_win = require("neomusic.controls.window")
 
     local center_col = math.floor(M.window_width / 2)
     local back_pos = center_col - 13
@@ -69,31 +51,43 @@ function M.toggle_controls_window()
         vim.api.nvim_buf_set_text(nm_controls_win.bufnr, M.symbol_row, forward_pos, M.symbol_row,
             forward_pos + M.forward_symbol:len(), { M.forward_symbol })
     end
-    nm_controls_keys.load_keymaps()
 end
 
----Update the play/pause symbol when the song is either paused or playing
----@param row number
----@param col_start number
----@param col_end number
----@param mouse_row number
----@param mouse_col number
-function M.update_play_pause_symbol(row, col_start, col_end, mouse_row, mouse_col)
+---Toggle the window for the controls
+function M.toggle_controls_window()
     local nm_state = require("neomusic.state")
     local nm_controls_win = require("neomusic.controls.window")
+    local nm_controls_state = require("neomusic.controls.state")
+    local nm_controls_keys = require("neomusic.controls.keymaps")
 
-    print("mouse row: " .. mouse_row .. " " .. "row: ", row + 1)
-    if row + 1 == mouse_row then
-        if mouse_col >= col_start + 1 and mouse_col <= col_end + 1 then
-            if nm_state.is_playing then
-                nm_state.pause_song()
-                vim.api.nvim_buf_set_text(nm_controls_win.bufnr, row, col_start, row, col_end, { M.play_symbol })
-            elseif nm_state.is_paused then
-                nm_state.unpause_song()
-                vim.api.nvim_buf_set_text(nm_controls_win.bufnr, row, col_start, row, col_end, { M.pause_symbol })
-            end
-        end
+    if nm_controls_win.win ~= nil and vim.api.nvim_win_is_valid(nm_controls_win.win) then
+        nm_controls_win.close_window()
+        nm_controls_state.win_is_open = false
+        return
     end
+
+    nm_controls_win.create_window("Neomsic Controls", M.window_width, M.window_height)
+    nm_controls_state.win_is_open = true
+
+    if nm_state.cur_song == nil then
+        nm_state.cur_song = "No song playing"
+        nm_state.song_name = "No song playing"
+    end
+
+    vim.api.nvim_buf_set_lines(nm_controls_win.bufnr, 0, -1, false, {
+        string.rep(" ", M.window_width),
+        string.rep(" ", M.window_width),
+        string.rep(" ", M.window_width),
+        string.rep(" ", M.window_width),
+        string.rep(" ", M.window_width),
+        string.rep(" ", M.window_width),
+        string.rep(" ", M.window_width)
+    })
+
+    draw_song_title()
+    draw_control_symbols()
+    nm_controls_state.tick_controls_playback_time()
+    nm_controls_keys.load_keymaps()
 end
 
 return M

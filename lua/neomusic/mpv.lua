@@ -4,6 +4,8 @@ local M = { mpv_pid = nil }
 function M._internal_play_song(song_path)
     local nm_sock = require("neomusic.socket")
     local nm_win = require("neomusic.window")
+    local nm_state = require("neomusic.state")
+
     local job_id = vim.fn.jobstart('mpv --no-video --input-ipc-server=' .. nm_sock.sock_path .. ' ' .. song_path, {
         on_exit = function(_, exit_code, _)
             if exit_code ~= 0 then
@@ -11,6 +13,7 @@ function M._internal_play_song(song_path)
                 nm_win.notification("Something when wrong exiting mpv")
             else
                 M.mpv_pid = nil
+                nm_state.song_finished = true
                 nm_win.notification("Song finished")
             end
         end,
@@ -90,13 +93,10 @@ function M._kill_mpv()
     end
 end
 
----Internal function to get the song duration by using the mpv socket
----@return number
-function M._get_song_duration()
-    local nm_sock = require("neomusic.socket")
-
-    local ret = nm_sock._write('{\"command\": [\"get_property\", \"duration\"]}')
-    local split = string.gmatch(ret[1], "([^" .. "," .. "]+)")
+---Internal function to get the data field from mpv ipc json
+---@param json table
+local function get_mpv_data(json)
+    local split = string.gmatch(json[1], "([^" .. "," .. "]+)")
     local data_parts = {}
 
     for item in split do
@@ -108,6 +108,16 @@ function M._get_song_duration()
             break
         end
     end
+    return data_parts
+end
+
+---Internal function to get the song duration by using the mpv socket
+---@return number
+function M._get_song_duration()
+    local nm_sock = require("neomusic.socket")
+
+    local ret = nm_sock._write('{\"command\": [\"get_property\", \"duration\"]}')
+    local data_parts = get_mpv_data(ret)
     return tonumber(data_parts[2], 10)
 end
 
@@ -117,18 +127,17 @@ function M._get_current_volume()
     local nm_sock = require("neomusic.socket")
 
     local ret = nm_sock._write('{\"command\": [\"get_property\", \"volume\"] }')
-    local split = string.gmatch(ret[1], "([^" .. "," .. "]+)")
-    local data_parts = {}
+    local data_parts = get_mpv_data(ret)
+    return tonumber(data_parts[2], 10)
+end
 
-    for item in split do
-        if string.find(item, "data") then
-            local data = string.gmatch(item, "([^" .. ":" .. "]+)")
-            for section in data do
-                table.insert(data_parts, section)
-            end
-            break
-        end
-    end
+---Internal function to get the playback time of mpv
+---@return integer
+function M._get_playback_time()
+    local nm_sock = require("neomusic.socket")
+
+    local ret = nm_sock._write('{\"command\": [\"get_property\", \"playback-time\"]}')
+    local data_parts = get_mpv_data(ret)
     return tonumber(data_parts[2], 10)
 end
 

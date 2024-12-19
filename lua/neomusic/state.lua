@@ -1,15 +1,16 @@
 local M = {
     cur_dir = nil,
     songs_populated = nil,
-    is_playing = nil,
-    is_paused = nil,
+    is_playing = false,
+    is_paused = false,
     cur_song = nil,
     song_name = nil,
     next_song_name = nil,
     prev_song_name = nil,
     song_queue = nil,
     mouse_clicked = 0,
-    prev_mouse_row = nil
+    prev_mouse_row = nil,
+    song_finished = false,
 }
 
 ---Reset state of plugin (this happens when neovim is quit too)
