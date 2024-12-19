@@ -9,7 +9,7 @@ Some people like to listen to music while they code, however, in order to do so 
 
 ## Dependencies
 
-- `nvim 0.8.0+`
+- `nvim 0.10.0+`
 - `socat`
 - `mpv`
 - `telescope.nvim` (neovim plugin)
@@ -26,17 +26,19 @@ require("lazy").setup({
         {
             "aroario2003/neomusic.nvim",
             dependencies = { "nvim-telescope/telescope.nvim" }
+            config = function()
+                require("neomusic").setup()
+            end
         },
         -- ...other plugins,
     }
 })
 ```
 
-## Setup
+# Default Setup Options
 
 ```lua
-local nm = require("neomusic")
-nm.setup({
+{
     --The directory that you have your playlists are in
     playlist_dir=os.getenv("HOME") .. "/Music",
 
@@ -53,13 +55,13 @@ nm.setup({
             {'n', '<leader>Ps', ':Neomusic pause_song<CR>'},
             {'n', '<leader>nns', ':Neomusic next_song<CR>'},
             {'n', '<leader>nps', ':Neomusic prev_song<CR>'},
+            { 'n', '<leader>nis', ':Neomusic increase_volume 5<CR>' },
+            { 'n', '<leader>nds', ':Neomusic decrease_volume 5<CR>' },
         }
     }
-})
+}
 ```
 
-The default configuration is above, if you are ok with that configuration then you can just do:
+# After Install
 
-```lua
-require("neomusic").setup()
-```
+Once neomusic is installed with your plugin manager, it is recommended that you run `:checkhealth neomusic` inside of neovim.
