@@ -25,7 +25,7 @@ require("lazy").setup({
     spec = {
         {
             "aroario2003/neomusic.nvim",
-            dependencies = { "nvim-telescope/telescope.nvim" }
+            dependencies = { "nvim-telescope/telescope.nvim" },
             config = function()
                 require("neomusic").setup()
             end
