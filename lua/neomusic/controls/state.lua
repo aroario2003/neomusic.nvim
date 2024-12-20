@@ -3,6 +3,7 @@ local M = {
     song_cur_mins = 0,
     song_cur_secs = 0,
     timer_started = false,
+    extm_id_ptime = nil
 }
 
 ---Update the play/pause symbol when the song is either paused or playing
@@ -62,9 +63,18 @@ function M.__playing_timer()
             playback_time_str = string.format("%d:%d ", M.song_cur_mins, M.song_cur_secs)
         end
 
-        vim.api.nvim_buf_set_text(nm_controls_win.bufnr, 5, 1, 5, playback_time_str:len(),
-            { string.rep(" ", playback_time_str:len()) })
-        vim.api.nvim_buf_set_text(nm_controls_win.bufnr, 5, 1, 5, playback_time_str:len(), { playback_time_str })
+        if M.win_is_open then
+            if M.extm_id_ptime ~= nil then
+                vim.api.nvim_buf_del_extmark(nm_controls_win.bufnr, nm_controls_win.ns, M.extm_id_ptime)
+            end
+            M.extm_id_ptime = vim.api.nvim_buf_set_extmark(nm_controls_win.bufnr, nm_controls_win.ns, 5, 1,
+                {
+                    virt_text = { { playback_time_str } },
+                    virt_text_pos = "overlay",
+                    end_row = 5,
+                    end_col = playback_time_str:len()
+                })
+        end
 
         if nm_state.song_finished then
             nm_state.is_playing = false
@@ -106,8 +116,16 @@ function M.tick_controls_playback_time()
     local nm_state = require("neomusic.state")
     local nm_controls_win = require("neomusic.controls.window")
 
-    local playback_time_str = string.format("%d:%d ", M.song_cur_mins, M.song_cur_secs)
-    vim.api.nvim_buf_set_text(nm_controls_win.bufnr, 5, 1, 5, playback_time_str:len() - 1, { playback_time_str })
+    local cur_secs_str = ""
+    local playback_time_str = ""
+    if M.song_cur_secs < 10 then
+        cur_secs_str = string.format("0%d", M.song_cur_secs)
+        playback_time_str = string.format("%d:%s ", M.song_cur_mins, cur_secs_str)
+    else
+        playback_time_str = string.format("%d:%d ", M.song_cur_mins, M.song_cur_secs)
+    end
+    M.extm_id_ptime = vim.api.nvim_buf_set_extmark(nm_controls_win.bufnr, nm_controls_win.ns, 5, 1,
+        { virt_text = { { playback_time_str } }, end_row = 5, end_col = playback_time_str:len() })
 
     if not M.timer_started then
         if nm_state.is_playing then

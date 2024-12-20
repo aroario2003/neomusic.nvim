@@ -205,7 +205,7 @@ function M.prev_song()
         nm_mpv._internal_play_song(M.prev_song_name)
         M.cur_song = M.prev_song_name
         M.song_name = get_song_name(M.cur_song)
-        nm_win.notification("Playing prev song: %s", M.cur_song)
+        nm_win.notification("Playing previous song: %s", M.cur_song)
         get_prev_next_songs()
     else
         nm_win.notification("No previous song to play")
