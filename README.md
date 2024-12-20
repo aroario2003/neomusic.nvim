@@ -1,6 +1,6 @@
 <div align="center">
     <h1>neomusic.nvim</h1>
-    <img src="./assets/logo.png></img>
+    <img src="./assets/logo.webp></img>
 </div>
 
 > [!WARNING]
