@@ -1,4 +1,7 @@
-# neomusic.nvim
+<div align="center">
+    <h1>neomusic.nvim</h1>
+    <img src="./assets/logo.png></img>
+</div>
 
 > [!WARNING]
 > This plugin is in very early development, many bugs are present. Use at your own risk.
