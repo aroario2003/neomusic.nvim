@@ -3,7 +3,10 @@ local M = {
     song_cur_mins = 0,
     song_cur_secs = 0,
     timer_started = false,
-    extm_id_ptime = nil
+    extm_id_ptime = nil,
+    extm_id_pbar = nil,
+    extm_id_st = nil,
+    ptime_str_len = nil,
 }
 
 ---Update the play/pause symbol when the song is either paused or playing
@@ -114,6 +117,7 @@ end
 ---Updates the current playback time
 function M.tick_controls_playback_time()
     local nm_state = require("neomusic.state")
+    local nm_controls = require("neomusic.controls")
     local nm_controls_win = require("neomusic.controls.window")
 
     local cur_secs_str = ""
@@ -124,14 +128,24 @@ function M.tick_controls_playback_time()
     else
         playback_time_str = string.format("%d:%d ", M.song_cur_mins, M.song_cur_secs)
     end
-    M.extm_id_ptime = vim.api.nvim_buf_set_extmark(nm_controls_win.bufnr, nm_controls_win.ns, 5, 1,
-        { virt_text = { { playback_time_str } }, end_row = 5, end_col = playback_time_str:len() })
 
-    if not M.timer_started then
-        if nm_state.is_playing then
-            M.__playing_timer()
+    M.ptime_str_len = playback_time_str:len()
+
+    M.extm_id_ptime = vim.api.nvim_buf_set_extmark(nm_controls_win.bufnr, nm_controls_win.ns, 5, 1,
+        { virt_text = { { playback_time_str } }, virt_text_pos = "overlay", end_row = 5, end_col = playback_time_str:len() })
+
+    ---@diagnostic disable-next-line:undefined-field
+    local timer = vim.uv.new_timer()
+    timer:start(0, 1000, vim.schedule_wrap(function()
+        if not M.timer_started then
+            if nm_state.is_playing then
+                timer:stop()
+                timer:close()
+                nm_controls.draw_song_title()
+                M.__playing_timer()
+            end
         end
-    end
+    end))
 end
 
 return M

@@ -10,10 +10,20 @@ function M.load_keymaps()
     vim.keymap.set('n', '<LeftMouse>', function()
         local center_col = math.floor(nm_controls.window_width / 2)
         local main_symbol_pos = center_col
+        local back_symbol_pos = center_col - nm_controls.symbol_offset
+        local forward_symbol_pos = center_col + nm_controls.symbol_offset
 
         local mouse_pos = vim.fn.getmousepos()
         local mouse_row = mouse_pos.line
         local mouse_col = mouse_pos.column
+
+        if nm_controls.symbol_row == mouse_row then
+            if mouse_col >= back_symbol_pos and mouse_col <= nm_controls.back_symbol:len() then
+                nm_state.prev_song()
+            elseif mouse_col >= forward_symbol_pos and mouse_col <= nm_controls.forward_symbol:len() then
+                nm_state.next_song()
+            end
+        end
 
         if nm_state.is_playing then
             nm_controls_state.update_play_pause_symbol(nm_controls.symbol_row, main_symbol_pos,
