@@ -68,3 +68,7 @@ require("lazy").setup({
 # After Install
 
 Once neomusic is installed with your plugin manager, it is recommended that you run `:checkhealth neomusic` inside of neovim.
+
+# Usage
+
+The idea behind this plugin is that you have your own collection of music in some directory on your system that can be played with mpv. This plugin essentially acts as a middle man between you and mpv. Most of how to use the plugin is self explanatory given the keybindings above.
