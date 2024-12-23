@@ -12,6 +12,7 @@ function M._write(message)
 
     local output = {}
 
+    ---@diagnostic disable-next-line:need-check-nil
     for str in pfile:lines() do
         table.insert(output, str)
     end

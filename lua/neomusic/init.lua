@@ -16,6 +16,9 @@ M.config = {
     }
 }
 
+---Internal function to list directories
+---@param dir string
+---@return table
 function M._get_dir_listing(dir)
     local nm_win = require("neomusic.window")
     local listing = {}
@@ -33,6 +36,7 @@ function M._get_dir_listing(dir)
     return listing
 end
 
+---Highlight the current hover with cursor in the menu
 local function highlight_current_hover()
     local nm_win = require("neomusic.window")
     local cur_pos = vim.api.nvim_win_get_cursor(nm_win.win)
@@ -41,6 +45,7 @@ local function highlight_current_hover()
         { end_line = row + 1, hl_eol = true, hl_group = "visual" })
 end
 
+---Enter the current hover if possible
 function M.enter_selection()
     local nm_state = require("neomusic.state")
     local nm_keys = require("neomusic.keymaps")
@@ -70,6 +75,7 @@ function M.enter_selection()
     end
 end
 
+---Toggle the menu of playlists and songs
 function M.toggle_playlist_menu()
     local nm_keys = require("neomusic.keymaps")
     local nm_state = require("neomusic.state")
@@ -93,10 +99,13 @@ function M.toggle_playlist_menu()
     nm_keys.load_keymaps()
 end
 
+---Setup and configuration for the plugin
+---@param conf table
 function M.setup(conf)
-    M.config = conf or M.config
     local nm_keys = require("neomusic.keymaps")
     local nm_command = require("neomusic.command")
+
+    M.config = conf or M.config
     nm_keys.load_global_keymaps()
     nm_command.init_command()
 end
