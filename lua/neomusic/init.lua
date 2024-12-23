@@ -3,6 +3,7 @@ local M = {}
 M.config = {
     playlist_dir = os.getenv("HOME") .. "/Music",
     notif_timeout = 5,
+    song_queue_max_items = nil,
     global_keymaps = {
         keybinds = {
             { 'n', '<leader>nt',  ':Neomusic toggle_playlist_menu<CR>' },

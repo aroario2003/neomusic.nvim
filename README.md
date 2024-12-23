@@ -49,6 +49,10 @@ require("lazy").setup({
     --timeout after this amount of seconds
     notif_timeout = 5,
 
+    --Max items that can be put into the song queue at a time,
+    --nil means use the default (1,000)
+    song_queue_max_items = nil,
+
     --Neovim global keymaps, which are not buffer local,
     --make sure these dont conflict with existing keybinds
     global_keymaps = {

@@ -26,6 +26,7 @@ function M.search_playlists()
     local tscope_state = require("telescope.actions.state")
     local tscope_actions = require("telescope.actions")
 
+    local nm = require("neomusic")
     local nm_state = require("neomusic.state")
     local nm_win = require("neomusic.window")
     local Queue = require("neomusic.queue")
@@ -33,7 +34,11 @@ function M.search_playlists()
     local opts = {}
 
     if nm_state.song_queue == nil then
-        nm_state.song_queue = Queue:new()
+        if nm.config.song_queue_max_items then
+            nm_state.song_queue = Queue:new(nm.config.song_queue_max_items)
+        else
+            nm_state.song_queue = Queue:new()
+        end
     end
 
     tscope_pickers.new({}, {
