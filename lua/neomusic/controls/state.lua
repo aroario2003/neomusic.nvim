@@ -19,6 +19,7 @@ local M = {
 function M.update_play_pause_symbol(row, col_start, col_end, mouse_row, mouse_col)
     local nm_state = require("neomusic.state")
     local nm_controls = require("neomusic.controls")
+    local nm_controls_ui = require("neomusic.controls.ui")
     local nm_controls_win = require("neomusic.controls.window")
 
     if row + 1 == mouse_row then
@@ -26,11 +27,11 @@ function M.update_play_pause_symbol(row, col_start, col_end, mouse_row, mouse_co
             if nm_state.is_playing then
                 nm_state.pause_song()
                 vim.api.nvim_buf_set_text(nm_controls_win.bufnr, row, col_start, row, col_end,
-                    { nm_controls.play_symbol })
+                    { nm_controls_ui.play_symbol })
             elseif nm_state.is_paused then
                 nm_state.unpause_song()
                 vim.api.nvim_buf_set_text(nm_controls_win.bufnr, row, col_start, row, col_end,
-                    { nm_controls.pause_symbol })
+                    { nm_controls_ui.pause_symbol })
             end
         end
     end
@@ -118,7 +119,7 @@ end
 ---Updates the current playback time
 function M.tick_controls_playback_time()
     local nm_state = require("neomusic.state")
-    local nm_controls = require("neomusic.controls")
+    local nm_controls_ui = require("neomusic.controls.ui")
     local nm_controls_win = require("neomusic.controls.window")
 
     local cur_secs_str = ""
@@ -142,7 +143,7 @@ function M.tick_controls_playback_time()
             if nm_state.is_playing then
                 timer:stop()
                 timer:close()
-                nm_controls.draw_song_title()
+                nm_controls_ui.draw_song_title()
                 M.__playing_timer()
             end
         end
