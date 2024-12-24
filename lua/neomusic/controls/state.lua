@@ -4,7 +4,8 @@ local M = {
     song_cur_secs = 0,
     timer_started = false,
     extm_id_ptime = nil,
-    extm_id_pbar = nil,
+    extm_id_pbar_ul = nil,
+    extm_id_pbar_ol = nil,
     extm_id_st = nil,
     ptime_str_len = nil,
 }
@@ -86,7 +87,7 @@ function M.__playing_timer()
             nm_state.cur_song = "No song playing"
             nm_state.song_name = "No song playing"
 
-            nm_state.song_finished = false
+            --nm_state.song_finished = false
 
             M.song_cur_mins = 0
             M.song_cur_secs = 0

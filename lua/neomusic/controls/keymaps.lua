@@ -18,7 +18,6 @@ function M.load_keymaps()
         local mouse_col = mouse_pos.column
 
         if nm_controls.symbol_row + 1 == mouse_row then
-            print("got here")
             if mouse_col >= back_symbol_pos + 1 and mouse_col <= back_symbol_pos + nm_controls.back_symbol:len() + 1 then
                 nm_state.prev_song()
             elseif mouse_col >= forward_symbol_pos + 1 and mouse_col <= forward_symbol_pos + nm_controls.forward_symbol:len() + 1 then

@@ -10,21 +10,63 @@ local M = {
     pbar_row = 5,
 }
 
-local function draw_progressbar_underline()
+---Draw the current progress of the song on top of the progressbar underline
+---@param pbar_width number
+---@param pbar_start_col number
+local function draw_progressbar_overline(pbar_width, pbar_start_col)
+    local nm_mpv = require("neomusic.mpv")
+    local nm_state = require("neomusic.state")
+    local nm_controls_state = require("neomusic.controls.state")
+    local nm_controls_win = require("neomusic.controls.window")
+
+    local cur_mins_to_secs = nm_controls_state.song_cur_mins * 60
+    local cur_total_secs = cur_mins_to_secs + nm_controls_state.song_cur_secs
+
+    if not nm_state.song_finished then
+        local song_duration = nm_mpv._get_song_duration()
+        local overline_reps = math.ceil(pbar_width * (cur_total_secs / song_duration))
+
+        if nm_controls_state.extm_id_pbar_ol then
+            vim.api.nvim_buf_del_extmark(nm_controls_win.bufnr, nm_controls_win.ns, nm_controls_state.extm_id_pbar_ol)
+        end
+
+        nm_controls_state.extm_id_pbar_ol = vim.api.nvim_buf_set_extmark(nm_controls_win.bufnr, nm_controls_win.ns,
+            M.pbar_row,
+            pbar_start_col,
+            {
+                end_row = M.pbar_row,
+                end_col = M.window_width - 1,
+                virt_text = { { string.rep("╸", overline_reps), "@markup.strong" } },
+                virt_text_pos = "overlay"
+            })
+    end
+end
+
+---Draw the entire progress bar
+local function draw_progressbar()
     local nm_controls_win = require("neomusic.controls.window")
     local nm_controls_state = require("neomusic.controls.state")
 
     local pbar_start_col = nm_controls_state.ptime_str_len + 1
+    local pbar_width = M.window_width - pbar_start_col
 
-    nm_controls_state.extm_id_pbar = vim.api.nvim_buf_set_extmark(nm_controls_win.bufnr, nm_controls_win.ns, M.pbar_row,
+    if nm_controls_state.extm_id_pbar_ul then
+        vim.api.nvim_buf_del_extmark(nm_controls_win.bufnr, nm_controls_win.ns, nm_controls_state.extm_id_pbar_ul)
+    end
+
+    nm_controls_state.extm_id_pbar_ul = vim.api.nvim_buf_set_extmark(nm_controls_win.bufnr, nm_controls_win.ns,
+        M.pbar_row,
         pbar_start_col,
         {
             end_row = M.pbar_row,
             end_col = M.window_width - 1,
-            virt_text = { { "╸", "CursorLineFold" } },
+            virt_text = { { string.rep("╸", pbar_width), "CursorLineFold" } },
             virt_text_pos = "overlay"
         })
+
+    draw_progressbar_overline(pbar_width, pbar_start_col)
 end
+
 
 ---Function to draw the song title on the controls window
 function M.draw_song_title()
@@ -45,7 +87,7 @@ function M.draw_song_title()
         end_col = start_col + nm_state.song_name:len()
     end
 
-    if nm_controls_state.extm_id_st ~= nil then
+    if nm_controls_state.extm_id_st then
         vim.api.nvim_buf_del_extmark(nm_controls_win.bufnr, nm_controls_win.ns, nm_controls_state.extm_id_st)
     end
 
@@ -114,17 +156,29 @@ function M.toggle_controls_window()
     M.draw_song_title()
 
     ---@diagnostic disable-next-line:undefined-field
-    local timer = vim.uv.new_timer()
-    timer:start(0, 500, vim.schedule_wrap(function()
+    local timer_pt = vim.uv.new_timer()
+    timer_pt:start(0, 500, vim.schedule_wrap(function()
         if nm_controls_state.win_is_open then
             draw_control_symbols()
         else
-            timer:stop()
-            timer:close()
+            timer_pt:stop()
+            timer_pt:close()
         end
     end))
 
     nm_controls_state.tick_controls_playback_time()
+
+    ---@diagnostic disable-next-line:undefined-field
+    local timer_pbar = vim.uv.new_timer()
+    timer_pbar:start(0, 1000, vim.schedule_wrap(function()
+        if not nm_state.song_finished then
+            draw_progressbar()
+        else
+            timer_pbar:stop()
+            timer_pbar:close()
+        end
+    end))
+
     nm_controls_keys.load_keymaps()
 end
 
