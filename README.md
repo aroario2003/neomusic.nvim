@@ -43,7 +43,7 @@ require("lazy").setup({
 ```lua
 {
     --The directory that you have your playlists are in
-    playlist_dir=os.getenv("HOME") .. "/Music",
+    playlist_dir = os.getenv("HOME") .. "/Music",
 
     --Any notifications recieved from neomusic will
     --timeout after this amount of seconds
@@ -57,11 +57,12 @@ require("lazy").setup({
     --make sure these dont conflict with existing keybinds
     global_keymaps = {
         keybinds = {
-            {'n', '<leader>nt', ':Neomusic toggle_playlist_menu<CR>'},
-            {'n', '<leader>ps', ':Neomusic unpause_song<CR>'},
-            {'n', '<leader>Ps', ':Neomusic pause_song<CR>'},
-            {'n', '<leader>nns', ':Neomusic next_song<CR>'},
-            {'n', '<leader>nps', ':Neomusic prev_song<CR>'},
+            { 'n', '<leader>nt', ':Neomusic toggle_playlist_menu<CR>' },
+            { 'n', '<leader>nc', ':Neomusic toggle_controls<CR>' },
+            { 'n', '<leader>ps', ':Neomusic unpause_song<CR>' },
+            { 'n', '<leader>Ps', ':Neomusic pause_song<CR>' },
+            { 'n', '<leader>nns', ':Neomusic next_song<CR>' },
+            { 'n', '<leader>nps', ':Neomusic prev_song<CR>' },
             { 'n', '<leader>nis', ':Neomusic increase_volume 5<CR>' },
             { 'n', '<leader>nds', ':Neomusic decrease_volume 5<CR>' },
         }

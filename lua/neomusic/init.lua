@@ -7,6 +7,7 @@ M.config = {
     global_keymaps = {
         keybinds = {
             { 'n', '<leader>nt',  ':Neomusic toggle_playlist_menu<CR>' },
+            { 'n', '<leader>nc',  ':Neomusic toggle_controls<CR>' },
             { 'n', '<leader>ps',  ':Neomusic unpause_song<CR>' },
             { 'n', '<leader>Ps',  ':Neomusic pause_song<CR>' },
             { 'n', '<leader>nns', ':Neomusic next_song<CR>' },
