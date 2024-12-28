@@ -8,13 +8,13 @@ function M._internal_play_song(song_path)
 
     local job_id = vim.fn.jobstart('mpv --no-video --input-ipc-server=' .. nm_sock.sock_path .. ' ' .. song_path, {
         on_exit = function(_, exit_code, _)
-            if exit_code ~= 0 then
-                M.mpv_pid = nil
-                nm_win.notification("Something when wrong exiting mpv")
-            else
-                M.mpv_pid = nil
+            if exit_code == 0 or exit_code == 137 then
                 nm_state.song_finished = true
-                nm_win.notification("Song finished")
+                if exit_code == 0 then
+                    nm_win.notification("Song finished")
+                end
+            else
+                nm_win.notification("Something went wrong exiting mpv")
             end
         end,
     })
@@ -84,6 +84,7 @@ end
 function M._kill_mpv()
     local nm_win = require("neomusic.window")
     if not M.mpv_pid then
+        nm_win.notification("got here")
         return
     end
 

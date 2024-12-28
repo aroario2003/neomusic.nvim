@@ -50,21 +50,23 @@ function M.draw_progressbar()
     local pbar_start_col = nm_controls_state.ptime_str_len + 1
     local pbar_width = M.window_width - pbar_start_col
 
-    if nm_controls_state.extm_id_pbar_ul then
-        vim.api.nvim_buf_del_extmark(nm_controls_win.bufnr, nm_controls_win.ns, nm_controls_state.extm_id_pbar_ul)
+    if nm_controls_state.win_is_open then
+        if nm_controls_state.extm_id_pbar_ul then
+            vim.api.nvim_buf_del_extmark(nm_controls_win.bufnr, nm_controls_win.ns, nm_controls_state.extm_id_pbar_ul)
+        end
+
+        nm_controls_state.extm_id_pbar_ul = vim.api.nvim_buf_set_extmark(nm_controls_win.bufnr, nm_controls_win.ns,
+            M.pbar_row,
+            pbar_start_col,
+            {
+                end_row = M.pbar_row,
+                end_col = M.window_width - 1,
+                virt_text = { { string.rep("╸", pbar_width), "CursorLineFold" } },
+                virt_text_pos = "overlay"
+            })
+
+        M.draw_progressbar_overline(pbar_width, pbar_start_col)
     end
-
-    nm_controls_state.extm_id_pbar_ul = vim.api.nvim_buf_set_extmark(nm_controls_win.bufnr, nm_controls_win.ns,
-        M.pbar_row,
-        pbar_start_col,
-        {
-            end_row = M.pbar_row,
-            end_col = M.window_width - 1,
-            virt_text = { { string.rep("╸", pbar_width), "CursorLineFold" } },
-            virt_text_pos = "overlay"
-        })
-
-    M.draw_progressbar_overline(pbar_width, pbar_start_col)
 end
 
 ---Function to draw the song title on the controls window

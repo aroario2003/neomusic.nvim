@@ -114,7 +114,7 @@ local function get_prev_next_songs()
     end
 end
 
-local function get_song_name(song_path)
+function M.get_song_name(song_path)
     local split = string.gmatch(song_path, "([^" .. "/" .. "]+)")
     local song_path_parts = {}
     for item in split do
@@ -133,11 +133,25 @@ function M.play_song(song_path)
     nm_mpv._internal_play_song(song_path)
     nm_win.notification("Now Playing: %s", song_path)
 
-    M.song_name = get_song_name(song_path)
+    M.song_name = M.get_song_name(song_path)
     M.cur_song = song_path
     M.is_playing = true
     M.is_paused = false
+    M.song_finished = false
     get_prev_next_songs()
+end
+
+function M.play_queue()
+    local nm_win = require("neomusic.window")
+
+    ---@diagnostic disable-next-line:undefined-field
+    local song_path = M.song_queue:pop()
+    if not song_path then
+        nm_win.notification("The queue is empty")
+        return
+    end
+
+    M.play_song(song_path)
 end
 
 ---Pause the song with mpv
@@ -187,7 +201,7 @@ function M.next_song()
         nm_mpv._kill_mpv()
         nm_mpv._internal_play_song(M.next_song_name)
         M.cur_song = M.next_song_name
-        M.song_name = get_song_name(M.cur_song)
+        M.song_name = M.get_song_name(M.cur_song)
         nm_win.notification("Playing next song: %s", M.cur_song)
         get_prev_next_songs()
     else
@@ -204,7 +218,7 @@ function M.prev_song()
         nm_mpv._kill_mpv()
         nm_mpv._internal_play_song(M.prev_song_name)
         M.cur_song = M.prev_song_name
-        M.song_name = get_song_name(M.cur_song)
+        M.song_name = M.get_song_name(M.cur_song)
         nm_win.notification("Playing previous song: %s", M.cur_song)
         get_prev_next_songs()
     else

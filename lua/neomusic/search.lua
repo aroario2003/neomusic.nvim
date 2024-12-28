@@ -10,10 +10,9 @@ local function recursive_playlist_listing()
     for _, playlist in ipairs(playlist_listing) do
         local full_playlist_path = nm.config.playlist_dir .. '/' .. playlist
         local listing = nm._get_dir_listing(full_playlist_path)
-        for i, item in ipairs(listing) do
-            listing[i] = full_playlist_path .. '/' .. item
+        for _, item in ipairs(listing) do
+            table.insert(recursive_listing, full_playlist_path .. '/' .. item)
         end
-        recursive_listing = vim.tbl_extend("keep", listing, recursive_listing)
     end
     return recursive_listing
 end

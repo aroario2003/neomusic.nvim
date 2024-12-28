@@ -1,5 +1,6 @@
 ---@class Queue
----@field items table
+---@field public items string[]
+---@field public song_map table
 ---@field max_items integer
 local Queue = {}
 
@@ -11,6 +12,7 @@ Queue.__index = Queue
 function Queue:new(max_items)
     local queue = setmetatable({
         items = {},
+        song_map = {},
         max_items = max_items or 1000
     }, self)
 
@@ -18,31 +20,37 @@ function Queue:new(max_items)
 end
 
 ---Push an element into the queue
----@param item any
+---@param item string
 function Queue:push(item)
     local nm_win = require("neomusic.window")
+    local nm_state = require("neomusic.state")
 
     if #self.items == self.max_items then
         nm_win.notification("The music queue is full, please remove some items")
         return
     end
+
+    local song_name = nm_state.get_song_name(item)
+    self.song_map[song_name] = item
+
     table.insert(self.items, item)
 end
 
 ---Pop an element from the queue
----@return any
+---@return string|nil
 function Queue:pop()
     if self:is_empty() then
         return nil
     end
-    local item = table.remove(self.items, 0)
+
+    local item = table.remove(self.items, 1)
     return item
 end
 
 ---Empty the queue completely
 function Queue:drain()
-    for _, item in ipairs(self.items) do
-        table.remove(self.items, item)
+    for _, _ in ipairs(self.items) do
+        table.remove(self.items, 1)
     end
 end
 
