@@ -25,9 +25,10 @@ function M.toggle_queue_view()
 
         local song_names = {}
         ---@diagnostic disable-next-line:undefined-field
-        for key, _ in pairs(nm_state.song_queue.song_map) do
-            table.insert(song_names, key)
+        for _, song_path in ipairs(nm_state.song_queue.items) do
+            table.insert(song_names, nm_state.song_queue.song_map[song_path])
         end
+
         vim.api.nvim_buf_set_lines(nm_qv_win.bufnr, 0, -1, false, song_names)
         highlight_current_hover()
         nm_qv_keys.load_keymaps()

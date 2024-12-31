@@ -72,6 +72,10 @@ function M.enter_selection()
             nm_state.songs_populated = false
             highlight_current_hover()
         else
+            if nm_state.queue_is_playing then
+                nm_state.queue_is_playing = false
+            end
+
             nm_state.play_song(nm_state.cur_dir .. "/" .. song_name[1])
         end
     end

@@ -84,7 +84,6 @@ end
 function M._kill_mpv()
     local nm_win = require("neomusic.window")
     if not M.mpv_pid then
-        nm_win.notification("got here")
         return
     end
 

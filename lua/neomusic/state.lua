@@ -11,6 +11,7 @@ local M = {
     mouse_clicked = 0,
     prev_mouse_row = nil,
     song_finished = false,
+    queue_is_playing = false,
 }
 
 ---Reset state of plugin (this happens when neovim is quit too)
@@ -138,7 +139,10 @@ function M.play_song(song_path)
     M.is_playing = true
     M.is_paused = false
     M.song_finished = false
-    get_prev_next_songs()
+
+    if not M.queue_is_playing then
+        get_prev_next_songs()
+    end
 end
 
 function M.play_queue()
@@ -151,6 +155,7 @@ function M.play_queue()
         return
     end
 
+    M.queue_is_playing = true
     M.play_song(song_path)
 end
 

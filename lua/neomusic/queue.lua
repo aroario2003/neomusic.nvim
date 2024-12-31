@@ -31,7 +31,7 @@ function Queue:push(item)
     end
 
     local song_name = nm_state.get_song_name(item)
-    self.song_map[song_name] = item
+    self.song_map[item] = song_name
 
     table.insert(self.items, item)
 end
@@ -45,6 +45,15 @@ function Queue:pop()
 
     local item = table.remove(self.items, 1)
     return item
+end
+
+function Queue:swap(idx1, idx2)
+    if idx1 < 1 or idx1 > #self.items or idx2 < 1 or idx2 > #self.items then
+        return
+    end
+    local temp = self.items[idx1]
+    self.items[idx1] = self.items[idx2]
+    self.items[idx2] = temp
 end
 
 ---Empty the queue completely
