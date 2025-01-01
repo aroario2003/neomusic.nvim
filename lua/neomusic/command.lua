@@ -41,6 +41,8 @@ function M.parse_args(data)
     local nm = require("neomusic")
     local nm_state = require("neomusic.state")
     local nm_controls = require("neomusic.controls")
+    local nm_qv = require("neomusic.queueview")
+    local nm_se = require("neomusic.search")
 
     if #data.fargs == 1 then
         if data.fargs[1] == "toggle_playlist_menu" then
@@ -55,6 +57,12 @@ function M.parse_args(data)
             nm_state.unpause_song()
         elseif data.fargs[1] == "toggle_controls" then
             nm_controls.toggle_controls_window()
+        elseif data.fargs[1] == "toggle_queue_view" then
+            nm_qv.toggle_queue_view()
+        elseif data.fargs[1] == "play_queue" then
+            nm_state.play_queue()
+        elseif data.fargs[1] == "search_playlists" then
+            nm_se.search_playlists()
         end
     elseif #data.fargs == 2 then
         if data.fargs[1] == "play_song" then

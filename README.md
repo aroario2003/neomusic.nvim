@@ -65,6 +65,9 @@ require("lazy").setup({
             { 'n', '<leader>nps', ':Neomusic prev_song<CR>' },
             { 'n', '<leader>nis', ':Neomusic increase_volume 5<CR>' },
             { 'n', '<leader>nds', ':Neomusic decrease_volume 5<CR>' },
+            { 'n', '<leader>nqv', ':Neomusic toggle_queue_view<CR>' },
+            { 'n', '<leader>npq', ':Neomusic play_queue<CR>' },
+            { 'n', '<leader>nsp', ':Neomusic search_playlists<CR>' },
         }
     }
 }
