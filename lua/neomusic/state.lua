@@ -157,6 +157,26 @@ function M.play_queue()
 
     M.queue_is_playing = true
     M.play_song(song_path)
+
+    ---@diagnostic disable-next-line:undefined-field
+    local timer = vim.uv.new_timer()
+    timer:start(0, 2000, vim.schedule_wrap(function()
+        if M.song_finished then
+            ---@diagnostic disable-next-line:undefined-field
+            song_path = M.song_queue:pop()
+            if song_path then
+                M.play_song(song_path)
+            else
+                timer:stop()
+                timer:close()
+                M.queue_is_playing = false
+                M.song_finished = true
+                M.is_playing = false
+                M.is_paused = false
+                nm_win.notification("Queue finished")
+            end
+        end
+    end))
 end
 
 ---Pause the song with mpv

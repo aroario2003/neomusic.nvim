@@ -10,6 +10,7 @@ function M._internal_play_song(song_path)
         on_exit = function(_, exit_code, _)
             if exit_code == 0 or exit_code == 137 then
                 nm_state.song_finished = true
+
                 if exit_code == 0 then
                     nm_win.notification("Song finished")
                 end
